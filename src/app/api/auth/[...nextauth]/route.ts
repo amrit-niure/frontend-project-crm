@@ -49,8 +49,10 @@ callbacks: {
         session.user = token.user
         session.tokens = token.tokens
         return session;
-    }
-    
+    }  
+},
+pages: {
+  signIn: "/auth/signin"
 }
 };
 
