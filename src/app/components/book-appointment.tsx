@@ -57,8 +57,10 @@ const appointmentBookingFormSchema = z.object({
   visaExpiry: z.date().optional(),
 });
 
+type AppointmentBookingInput = z.infer<typeof appointmentBookingFormSchema>
+
 export default function BookAppointment() {
-  const form = useForm<z.infer<typeof appointmentBookingFormSchema>>({
+  const form = useForm<AppointmentBookingInput>({
     resolver: zodResolver(appointmentBookingFormSchema),
     defaultValues: {
       firstName: "",
