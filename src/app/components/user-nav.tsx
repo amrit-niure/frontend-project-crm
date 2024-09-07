@@ -10,8 +10,12 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
+import Link from "next/link";
 
-export function UserNav() {
+export async function UserNav() {
+  const session = await getServerSession(authOptions)
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -20,22 +24,22 @@ export function UserNav() {
             <AvatarImage src="/avatars/01.png" alt="@shadcn" />
             <AvatarFallback>SC</AvatarFallback>
           </Avatar>
-          <span className="font-bold">Amrit Niure</span>
+          <span className="font-bold">{session?.user.name}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">Amrit Niure</p>
+            <p className="text-sm font-medium leading-none">{session?.user.name}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              amrit@applyworldgroup.com.au
+            {session?.user.email}
             </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            Profile
+            <Link href={`/dashboard/user/${session?.user.id}`}>Profile</Link>
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem>
@@ -46,7 +50,9 @@ export function UserNav() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          Log out
+        <Link href={"/api/auth/signout"}>
+          Sign Out
+        </Link>
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuContent>
