@@ -40,21 +40,11 @@ export async function UserNav() {
         <DropdownMenuGroup>
           <DropdownMenuItem>
             <Link href={`/dashboard/user/${session?.user.id}`}>Profile</Link>
-            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem>
             Settings
-            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem>New Team</DropdownMenuItem>
         </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
-        <Link href={"/api/auth/signout"}>
-          Sign Out
-        </Link>
-          <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
