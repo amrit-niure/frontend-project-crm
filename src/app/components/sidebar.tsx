@@ -27,6 +27,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import Link from "next/link";
 
 export function Sidebar() {
   return (
@@ -125,7 +126,7 @@ export function Sidebar() {
           <div className="self-start">
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant={"ghost"}>
+                <Button variant={"ghost"} className="flex gap-2">
                   <LogOutIcon className="h-5 w-5" />
                   Sign Out
                 </Button>
@@ -147,7 +148,7 @@ export function Sidebar() {
                         Close
                       </Button>
                     </DialogClose>
-                    <Button>Sign Out</Button>
+                    <Button> <Link href="/api/auth/signout">Sign Out</Link></Button>
                   </div>
                 </DialogFooter>
               </DialogContent>
