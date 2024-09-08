@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import Link from "next/link";
-import { BACKEND_URL } from "@/lib/constants";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
@@ -27,7 +26,7 @@ export default async function Home() {
         <Link href={"/api/auth/signin"}>
           <Button>Sign In</Button>
         </Link>
-        <Link href={BACKEND_URL + "/auth/signup"}>
+        <Link href={"/auth/signup"}>
           <Button variant={"outline"}>Sign Up</Button>
         </Link>
       </div>

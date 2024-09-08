@@ -18,16 +18,27 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import FormError from "@/app/components/form-error";
 import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { useMutation, UseMutationResult } from "@tanstack/react-query";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+enum ROLE {
+  ADMIN = "ADMIN",
+  USER = "USER",
+}
+
 const signUpSchema = z.object({
   name: z.string().min(3, "Name should be atleast 3 characters long."),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
+  role: z.nativeEnum(ROLE),
 });
 
 type SignUpInput = z.infer<typeof signUpSchema>;
 
 export default function SignIn() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const { toast } = useToast();
 
   const {
     register,
@@ -39,22 +50,39 @@ export default function SignIn() {
       name: "",
       email: "",
       password: "",
+      role: ROLE.USER,
     },
     resolver: zodResolver(signUpSchema),
   });
 
-  const onSubmit: SubmitHandler<SignUpInput> = (data) => {
-    toast({
-        title: "You submitted the following values:",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <p className="text-white">{JSON.stringify(data, null, 2)}</p>
-          </pre>
-        ),
-      });
-    reset();
+  const signUp = async (data: SignUpInput) => {
+    const response = await axios.post("http://localhost:3000/auth/signup", data);
+    return response.data;
   };
-  const { toast } = useToast();
+
+  const mutation: UseMutationResult<any, Error, SignUpInput> = useMutation({
+    mutationFn: signUp,
+    onSuccess: (data: { message: string}) => {
+      console.log(data)
+      toast({
+        title: "Sign up successful!",
+        description:`${data.message}`,
+      });
+      router.push('/auth/signin')
+      reset();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error?.response?.data?.message || "An error occurred",
+      });
+    },
+  });
+const {isPending, mutate} = mutation;
+
+  const onSubmit: SubmitHandler<SignUpInput> = (data) => {
+    mutate(data);
+  };
   return (
     <div className="flex items-center justify-center h-[100vh]">
       <Card className="mx-auto max-w-sm">
@@ -75,7 +103,7 @@ export default function SignIn() {
                   required
                   {...register("name")}
                 />
-                {errors.name && <FormError error = {errors.name.message} />}
+                {errors.name && <FormError error={errors.name.message} />}
               </div>
 
               <div className="space-y-2">
@@ -87,7 +115,7 @@ export default function SignIn() {
                   required
                   {...register("email")}
                 />
-                {errors.email && <FormError error = {errors.email.message} />}
+                {errors.email && <FormError error={errors.email.message} />}
               </div>
               {/* {isSignUp && (
               <div className="space-y-2">
@@ -125,10 +153,12 @@ export default function SignIn() {
                       )}
                     </Button>
                   </div>
-                  {errors.password && ( <FormError error = {errors.password.message} /> )}
+                  {errors.password && (
+                    <FormError error={errors.password.message} />
+                  )}
                 </div>
               </div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full" disabled={isPending}>
                 Sign Up
               </Button>
             </div>

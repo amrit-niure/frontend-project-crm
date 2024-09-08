@@ -17,6 +17,11 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import axios from "axios";
+import { useMutation, UseMutationResult } from "@tanstack/react-query";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
 
 const signInSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -27,7 +32,7 @@ type SignInInput = z.infer<typeof signInSchema>;
 
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
-
+  const router = useRouter();
   const {
     register,
     reset,
@@ -41,18 +46,30 @@ export default function SignIn() {
     },
   });
 
-  const onSubmit: SubmitHandler<SignInInput> = (data) => {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <p className="text-white">{JSON.stringify(data, null, 2)}</p>
-        </pre>
-      ),
+  const onSubmit: SubmitHandler<SignInInput> = async (data) => {
+    const { email, password } = data;
+    const result = await signIn("credentials", {
+      redirect: false,
+      callbackUrl: '/dashboard',
+      username: email,
+      password: password,
     });
-  reset();
+    if (result?.error) {
+      toast({
+        title: "Error",
+        description: result.error || "An error occurred",
+      });
+    } else if (result?.ok) {
+      toast({
+        title: "Success",
+        description: "Logged In",
+      });
+      router.push(result.url || "/");
+      reset();
+    }
   };
 
+  
   const { toast } = useToast();
 
   return (
