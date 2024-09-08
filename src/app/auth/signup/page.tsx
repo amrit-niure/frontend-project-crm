@@ -68,8 +68,8 @@ export default function SignIn() {
         title: "Sign up successful!",
         description:`${data.message}`,
       });
-      router.push('/auth/signin')
       reset();
+      router.push('/auth/verify-email')
     },
     onError: (error: any) => {
       toast({
