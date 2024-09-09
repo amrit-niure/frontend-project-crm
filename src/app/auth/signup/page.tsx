@@ -22,8 +22,6 @@ import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
-
-
 enum ROLE {
   ADMIN = "ADMIN",
   USER = "USER",
@@ -66,7 +64,6 @@ export default function SignIn() {
   const mutation: UseMutationResult<any, Error, SignUpInput> = useMutation({
     mutationFn: signUp,
     onSuccess: (data: { message: string}) => {
-      console.log(data)
       toast({
         title: "Sign up successful!",
         description:`${data.message}`,
@@ -146,6 +143,7 @@ const {isPending, mutate} = mutation;
                     <Button
                       variant={"ghost"}
                       size="icon"
+                      type="button"
                       className="absolute bottom-1 right-1 h-7 w-7"
                       onClick={() => setShowPassword(!showPassword)}
                     >
