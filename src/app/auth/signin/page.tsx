@@ -21,7 +21,7 @@ import axios from "axios";
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-
+import FormError from "@/app/components/form-error";
 
 const signInSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -32,10 +32,10 @@ type SignInInput = z.infer<typeof signInSchema>;
 
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
+  const [isPending, setIsPending] = useState(false);
   const router = useRouter();
   const {
     register,
-    reset,
     handleSubmit,
     formState: { errors },
   } = useForm<SignInInput>({
@@ -47,29 +47,30 @@ export default function SignIn() {
   });
 
   const onSubmit: SubmitHandler<SignInInput> = async (data) => {
+    setIsPending(true)
     const { email, password } = data;
     const result = await signIn("credentials", {
       redirect: false,
-      callbackUrl: '/dashboard',
+      callbackUrl: "/dashboard",
       username: email,
       password: password,
     });
     if (result?.error) {
+      setIsPending(false)
       toast({
         title: "Error",
-        description: result.error || "An error occurred",
+        description: "Wrong Credentials",
       });
     } else if (result?.ok) {
+      setIsPending(false)
       toast({
         title: "Success",
         description: "Logged In",
       });
       router.push(result.url || "/");
-      reset();
     }
   };
 
-  
   const { toast } = useToast();
 
   return (
@@ -93,11 +94,11 @@ export default function SignIn() {
                   required
                   {...register("email")}
                 />
+                {errors.email && <FormError error={errors.email.message} />}
               </div>
               <div className="space-y-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
-
                   <Link
                     href="forgot-password"
                     className="ml-auto inline-block text-sm underline"
@@ -106,29 +107,34 @@ export default function SignIn() {
                     Forgot your password?
                   </Link>
                 </div>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    {...register("password")}
-                  />
+                <div>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      required
+                      {...register("password")}
+                    />
 
-                  <Button
-                    variant={"ghost"}
-                    size="icon"
-                    className="absolute bottom-1 right-1 h-7 w-7"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeIcon className="h-4 w-4" />
-                    ) : (
-                      <EyeOffIcon className="h-4 w-4" />
-                    )}
-                  </Button>
+                    <Button
+                      variant={"ghost"}
+                      size="icon"
+                      className="absolute bottom-1 right-1 h-7 w-7"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <EyeIcon className="h-4 w-4" />
+                      ) : (
+                        <EyeOffIcon className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                  {errors.password && (
+                    <FormError error={errors.password.message} />
+                  )}
                 </div>
               </div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full" disabled={isPending}>
                 Login
               </Button>
             </div>

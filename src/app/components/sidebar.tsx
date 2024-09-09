@@ -28,8 +28,24 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
+import axios from "axios";
+import { useSession } from "next-auth/react";
+
+
+
+
 
 export function Sidebar() {
+  const {data: session} = useSession()
+  async function customLogout() {
+
+    await signOut({ callbackUrl: "/auth/signin", redirect: true });
+  
+    await axios.post("http://localhost:3000/auth/logout", null, {
+      headers: { authorization: `Bearer ${session?.tokens.access_token}` },
+    });
+  }
   return (
     <div className="h-screen">
       <div>
@@ -148,7 +164,7 @@ export function Sidebar() {
                         Close
                       </Button>
                     </DialogClose>
-                    <Button> <Link href="/api/auth/signout">Sign Out</Link></Button>
+                    <Button onClick={() => customLogout()} > Sign Out</Button>
                   </div>
                 </DialogFooter>
               </DialogContent>
