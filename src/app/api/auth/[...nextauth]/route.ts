@@ -5,21 +5,20 @@ import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials"
 
 async function refreshToken(token: JWT): Promise<JWT> {
-  const res = await fetch(BACKEND_URL + "/auth/refresh", {
+  console.log("This should be correct : ", token.tokens?.refresh_token);
+  const res = await fetch(`${BACKEND_URL}/auth/refresh`, {
     method: "POST",
     headers: {
-      authorization: `Bearer ${token.tokens.refresh_token}`,
+      Authorization: `Bearer ${token.tokens?.refresh_token}`,
     },
   });
   console.log("refreshed");
 
   const response = await res.json();
-
-  return {
-    ...token,
-    tokens: response,
-  };
+  const refreshedTokens = { ...token, tokens: response }
+  return refreshedTokens;
 }
+
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -47,30 +46,26 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
         const user = await res.json()
-        if (res.ok && user) {
-          return user
-        }
-        return null;
+        return user;
       }
     })
   ],
   callbacks: {
     async jwt({ token, user }) {
-      // console.log("Jwt token and user object ",{token, user})
-      if (user) return { ...token, ...user }
+      if (user) {
+        return { ...token, ...user }
+      }
       if (new Date().getTime() < token.tokens.expiresIn) return token;
-
       return await refreshToken(token);
     },
     async session({ token, session }) {
-      session.user = token.user
-      session.tokens = token.tokens
+      session.user = token?.user
+      session.tokens = token?.tokens
       return session;
     }
   },
   pages: {
     signIn: "/auth/signin",
-    // signOut: "/auth/signout",
     verifyRequest: "/auth/verify-email"
   }
 };

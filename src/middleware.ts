@@ -2,13 +2,13 @@ import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(req: NextRequest) {
-  const pathname = req.nextUrl.pathname; 
-  const isAuth = await getToken({ req }); 
-  console.log('Authenticated User:', isAuth); 
+  const pathname = req.nextUrl.pathname;
+  const isAuth = await getToken({ req });
+  // console.log('Authenticated User:', isAuth); 
 
   const isAuthPage = pathname.startsWith('/auth/signin') || pathname.startsWith('/auth/signup');
 
-  const sensitiveRoutes = ['/dashboard']; 
+  const sensitiveRoutes = ['/dashboard'];
   const isAccessingSensitiveRoute = sensitiveRoutes.some(route =>
     pathname.startsWith(route)
   );
@@ -18,7 +18,7 @@ export async function middleware(req: NextRequest) {
     if (isAuth) {
       return NextResponse.redirect(new URL('/dashboard', req.url));
     }
-    return NextResponse.next(); 
+    return NextResponse.next();
   }
 
   // Redirect unauthenticated users trying to access sensitive routes to the login page
@@ -31,7 +31,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', req.url));
   }
 
-  return NextResponse.next(); 
+  return NextResponse.next();
 }
 
 // Configure the middleware matcher to target specific routes
