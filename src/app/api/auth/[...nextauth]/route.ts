@@ -26,17 +26,17 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        username: { label: "Username", type: "text" },
+        email: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials, req) {
-        if (!credentials?.username || !credentials?.password) return null
-        const { username, password } = credentials;
+        if (!credentials?.email || !credentials?.password) return null
+        const { email, password } = credentials;
 
         const res = await fetch(BACKEND_URL + "/auth/login", {
           method: 'POST',
           body: JSON.stringify({
-            username,
+            email,
             password
           }),
           headers: { "Content-Type": "application/json" }
@@ -58,8 +58,8 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       // console.log("Jwt token and user object ",{token, user})
       if (user) return { ...token, ...user }
-      if(new Date().getTime() < token.tokens.expiresIn)  return token;
-      
+      if (new Date().getTime() < token.tokens.expiresIn) return token;
+
       return await refreshToken(token);
     },
     async session({ token, session }) {

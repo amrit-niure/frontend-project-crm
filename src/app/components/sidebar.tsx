@@ -31,10 +31,7 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-
-
-
-
+import { BACKEND_URL } from "@/lib/constants";
 
 export function Sidebar() {
   const {data: session} = useSession()
@@ -42,7 +39,7 @@ export function Sidebar() {
 
     await signOut({ callbackUrl: "/auth/signin", redirect: true });
   
-    await axios.post("http://localhost:3000/auth/logout", null, {
+    await axios.post(`${BACKEND_URL}/auth/logout`, null, {
       headers: { authorization: `Bearer ${session?.tokens.access_token}` },
     });
   }

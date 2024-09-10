@@ -52,8 +52,8 @@ export default function SignIn() {
     const result = await signIn("credentials", {
       redirect: false,
       callbackUrl: "/dashboard",
-      username: email,
-      password: password,
+      email,
+      password
     });
     if (result?.error) {
       setIsPending(false)

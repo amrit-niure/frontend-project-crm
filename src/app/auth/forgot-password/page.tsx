@@ -12,6 +12,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import FormError from "@/app/components/form-error";
 import { Toaster } from "@/components/ui/toaster";
+import { BACKEND_URL } from "@/lib/constants";
 
 const forgotSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -32,9 +33,7 @@ export default function Component() {
   });
 
   const forgotPassword = async (data: emailInput) => {
-    alert("Hitting")
-    const response = await axios.post(
-      "http://localhost:3000/auth/forgot-password",
+    const response = await axios.post(`${BACKEND_URL}/auth/forgot-password`,
       data
     );
     return response.data;
