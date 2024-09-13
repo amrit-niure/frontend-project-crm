@@ -12,6 +12,7 @@ import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import FormError from "@/app/components/form-error";
 import { useRouter } from "next/navigation";
 import { Toaster } from "@/components/ui/toaster"
+import { BACKEND_URL } from "@/lib/constants"
 
 // const emailVerificationSchema = z.object({
 //   verificationCode: z.string()
@@ -43,7 +44,7 @@ const {
 });
 
 const sendVerificationCode = async (data: IType) => {
-  const response = await axios.post("http://localhost:3000/auth/verify-email", data);
+  const response = await axios.post(`${BACKEND_URL}/auth/verify-email`, data);
   return response.data;
 };
 

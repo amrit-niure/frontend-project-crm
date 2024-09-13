@@ -21,6 +21,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { BACKEND_URL } from "@/lib/constants";
 
 enum ROLE {
   ADMIN = "ADMIN",
@@ -57,7 +58,7 @@ export default function SignIn() {
   });
 
   const signUp = async (data: SignUpInput) => {
-    const response = await axios.post("http://localhost:3000/auth/signup", data);
+    const response = await axios.post(`${BACKEND_URL}/auth/signup`, data);
     return response.data;
   };
 
